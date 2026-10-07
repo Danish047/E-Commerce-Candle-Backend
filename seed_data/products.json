@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1, "slug": "monsoon-chai", "name": "Monsoon Chai",
+    "tagline": "First rain, a steaming cup, nowhere to be.",
+    "description": "The smell of wet earth meeting warm masala chai. Petrichor and cardamom up top, ginger and clove in the middle, settling into a creamy milk-and-tonka base. Our bestselling cosy candle.",
+    "price": 899, "compare_price": 1099, "size": "200g",
+    "category": "spicy", "moods": ["cosy", "nostalgic"], "occasions": ["diwali", "housewarming"],
+    "notes": { "top": ["Petrichor", "Cardamom"], "middle": ["Ginger", "Clove"], "base": ["Tonka", "Milk accord"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "10%",
+    "stock": 34, "rating": 4.8, "reviews_count": 126, "is_bestseller": true, "is_new": false,
+    "color": "#C99A6B", "images": []
+  },
+  {
+    "id": 2, "slug": "nanis-kitchen", "name": "Nani's Kitchen",
+    "tagline": "Summer holidays, ghee and jaggery.",
+    "description": "A warm hug from childhood: roasted cardamom, jaggery and a hint of ghee over soft sandalwood. Sweet but never sugary.",
+    "price": 849, "compare_price": null, "size": "200g",
+    "category": "sweet", "moods": ["nostalgic", "cosy"], "occasions": ["diwali", "birthday"],
+    "notes": { "top": ["Cardamom"], "middle": ["Jaggery", "Ghee accord"], "base": ["Sandalwood"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "9%",
+    "stock": 22, "rating": 4.9, "reviews_count": 88, "is_bestseller": true, "is_new": false,
+    "color": "#D9B27C", "images": []
+  },
+  {
+    "id": 3, "slug": "goa-sunset", "name": "Goa Sunset",
+    "tagline": "Salt in your hair, feet in the sand.",
+    "description": "Fresh coconut water, sea salt and a twist of lime over warm driftwood. Bright, breezy and instantly relaxing.",
+    "price": 799, "compare_price": 949, "size": "200g",
+    "category": "fresh", "moods": ["energised", "happy"], "occasions": ["birthday", "just-because"],
+    "notes": { "top": ["Lime", "Sea salt"], "middle": ["Coconut water"], "base": ["Driftwood"] },
+    "burn_time_hours": 45, "wax_type": "Soy-Coconut blend", "wick_type": "Wooden", "fragrance_load": "10%",
+    "stock": 40, "rating": 4.7, "reviews_count": 64, "is_bestseller": true, "is_new": false,
+    "color": "#E8A87C", "images": []
+  },
+  {
+    "id": 4, "slug": "exam-night-calm", "name": "Exam Night Calm",
+    "tagline": "Breathe in. You've got this.",
+    "description": "Lavender and chamomile with a soft vanilla base to quiet a busy mind. Made for long study nights and slow Sunday mornings.",
+    "price": 699, "compare_price": null, "size": "150g",
+    "category": "floral", "moods": ["calm", "focused"], "occasions": ["self-care", "just-because"],
+    "notes": { "top": ["Lavender"], "middle": ["Chamomile"], "base": ["Vanilla"] },
+    "burn_time_hours": 35, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "8%",
+    "stock": 51, "rating": 4.6, "reviews_count": 42, "is_bestseller": false, "is_new": false,
+    "color": "#B7A6C9", "images": []
+  },
+  {
+    "id": 5, "slug": "mogra-nights", "name": "Mogra Nights",
+    "tagline": "Jasmine strings and warm summer evenings.",
+    "description": "Heady mogra and tuberose balanced with soft musk. Romantic, festive and unmistakably Indian.",
+    "price": 949, "compare_price": 1149, "size": "200g",
+    "category": "floral", "moods": ["romantic", "happy"], "occasions": ["anniversary", "diwali"],
+    "notes": { "top": ["Mogra"], "middle": ["Tuberose"], "base": ["White musk"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "10%",
+    "stock": 18, "rating": 4.8, "reviews_count": 57, "is_bestseller": true, "is_new": false,
+    "color": "#EFE3C8", "images": []
+  },
+  {
+    "id": 6, "slug": "old-library", "name": "Old Library",
+    "tagline": "Leather chairs and yellowed pages.",
+    "description": "Aged paper, black tea and leather over cedarwood. For readers, dreamers and rainy afternoons.",
+    "price": 899, "compare_price": null, "size": "200g",
+    "category": "woody", "moods": ["focused", "cosy"], "occasions": ["birthday", "corporate"],
+    "notes": { "top": ["Black tea"], "middle": ["Paper accord", "Leather"], "base": ["Cedarwood"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Wooden", "fragrance_load": "9%",
+    "stock": 27, "rating": 4.7, "reviews_count": 39, "is_bestseller": false, "is_new": true,
+    "color": "#8B6B4E", "images": []
+  },
+  {
+    "id": 7, "slug": "diwali-diya-glow", "name": "Diwali Diya Glow",
+    "tagline": "Marigold, sweets and fairy lights.",
+    "description": "Marigold petals, saffron and kaju katli sweetness over a warm amber base. Our limited festive edition.",
+    "price": 999, "compare_price": 1299, "size": "200g",
+    "category": "spicy", "moods": ["happy", "festive"], "occasions": ["diwali", "corporate"],
+    "notes": { "top": ["Marigold", "Saffron"], "middle": ["Cashew sweet accord"], "base": ["Amber"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "10%",
+    "stock": 60, "rating": 4.9, "reviews_count": 31, "is_bestseller": false, "is_new": true,
+    "color": "#E0A23C", "images": []
+  },
+  {
+    "id": 8, "slug": "himalayan-pine", "name": "Himalayan Pine",
+    "tagline": "Cold mornings in the hills.",
+    "description": "Crisp pine needles, eucalyptus and mountain air with a smoky cedar base. Clean and grounding.",
+    "price": 849, "compare_price": null, "size": "200g",
+    "category": "woody", "moods": ["calm", "energised"], "occasions": ["housewarming", "just-because"],
+    "notes": { "top": ["Eucalyptus"], "middle": ["Pine needle"], "base": ["Smoked cedar"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Wooden", "fragrance_load": "9%",
+    "stock": 30, "rating": 4.6, "reviews_count": 23, "is_bestseller": false, "is_new": false,
+    "color": "#6F8A6A", "images": []
+  },
+  {
+    "id": 9, "slug": "rose-and-oud", "name": "Rose & Oud",
+    "tagline": "Old-world luxury in a jar.",
+    "description": "Damask rose layered over rich oud and a whisper of saffron. Deep, elegant and made for special evenings.",
+    "price": 1199, "compare_price": 1399, "size": "250g",
+    "category": "woody", "moods": ["romantic"], "occasions": ["anniversary", "corporate"],
+    "notes": { "top": ["Saffron"], "middle": ["Damask rose"], "base": ["Oud"] },
+    "burn_time_hours": 55, "wax_type": "Soy-Coconut blend", "wick_type": "Wooden", "fragrance_load": "10%",
+    "stock": 12, "rating": 4.9, "reviews_count": 45, "is_bestseller": true, "is_new": false,
+    "color": "#9E4F5A", "images": []
+  },
+  {
+    "id": 10, "slug": "lemongrass-morning", "name": "Lemongrass Morning",
+    "tagline": "A fresh start, every day.",
+    "description": "Zesty lemongrass, green tea and a touch of mint. Wakes up any room — and you.",
+    "price": 649, "compare_price": null, "size": "150g",
+    "category": "fresh", "moods": ["energised", "focused"], "occasions": ["self-care", "just-because"],
+    "notes": { "top": ["Lemongrass", "Mint"], "middle": ["Green tea"], "base": ["Vetiver"] },
+    "burn_time_hours": 35, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "8%",
+    "stock": 44, "rating": 4.5, "reviews_count": 19, "is_bestseller": false, "is_new": false,
+    "color": "#C7CF7A", "images": []
+  },
+  {
+    "id": 11, "slug": "vanilla-cloud", "name": "Vanilla Cloud",
+    "tagline": "Soft, sweet and endlessly comforting.",
+    "description": "Madagascar vanilla, warm caramel and creamy musk. The candle that makes everyone ask what smells so good.",
+    "price": 749, "compare_price": null, "size": "200g",
+    "category": "sweet", "moods": ["cosy", "calm"], "occasions": ["birthday", "self-care"],
+    "notes": { "top": ["Caramel"], "middle": ["Vanilla bean"], "base": ["Cream musk"] },
+    "burn_time_hours": 45, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "9%",
+    "stock": 38, "rating": 4.7, "reviews_count": 52, "is_bestseller": false, "is_new": false,
+    "color": "#F1E4CF", "images": []
+  },
+  {
+    "id": 12, "slug": "festive-gift-trio", "name": "Festive Gift Trio",
+    "tagline": "Three bestsellers, one beautiful box.",
+    "description": "Monsoon Chai, Nani's Kitchen and Diwali Diya Glow in 100g jars, packed in a keepsake box with a handwritten note card.",
+    "price": 1499, "compare_price": 1899, "size": "3 × 100g",
+    "category": "gift-sets", "moods": ["festive", "happy"], "occasions": ["diwali", "corporate", "housewarming"],
+    "notes": { "top": ["Cardamom", "Marigold"], "middle": ["Jaggery", "Ginger"], "base": ["Amber", "Sandalwood"] },
+    "burn_time_hours": 60, "wax_type": "100% Soy", "wick_type": "Cotton", "fragrance_load": "10%",
+    "stock": 25, "rating": 4.9, "reviews_count": 28, "is_bestseller": true, "is_new": true,
+    "color": "#B5563A", "images": []
+  }
+]

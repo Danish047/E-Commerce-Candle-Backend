@@ -1,0 +1,35 @@
+{
+  "questions": [
+    {
+      "id": "mood",
+      "question": "How do you want to feel tonight?",
+      "options": [
+        { "value": "calm", "label": "Calm & relaxed" },
+        { "value": "cosy", "label": "Cosy & warm" },
+        { "value": "energised", "label": "Fresh & energised" },
+        { "value": "romantic", "label": "Romantic" }
+      ]
+    },
+    {
+      "id": "category",
+      "question": "Which smells do you love most?",
+      "options": [
+        { "value": "floral", "label": "Flowers" },
+        { "value": "fresh", "label": "Citrus & greens" },
+        { "value": "spicy", "label": "Chai & spices" },
+        { "value": "sweet", "label": "Vanilla & sweets" },
+        { "value": "woody", "label": "Woods & oud" }
+      ]
+    },
+    {
+      "id": "occasion",
+      "question": "Who is it for?",
+      "options": [
+        { "value": "self-care", "label": "Just for me" },
+        { "value": "birthday", "label": "A birthday gift" },
+        { "value": "anniversary", "label": "My partner" },
+        { "value": "diwali", "label": "Diwali gifting" }
+      ]
+    }
+  ]
+}

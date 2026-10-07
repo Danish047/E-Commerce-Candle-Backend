@@ -1,0 +1,5 @@
+[
+  { "code": "WELCOME10", "type": "percent", "value": 10, "min_order": 0, "description": "10% off your first order" },
+  { "code": "DIWALI20", "type": "percent", "value": 20, "min_order": 1999, "description": "20% off on orders above ₹1,999" },
+  { "code": "FLAT150", "type": "flat", "value": 150, "min_order": 999, "description": "₹150 off on orders above ₹999" }
+]

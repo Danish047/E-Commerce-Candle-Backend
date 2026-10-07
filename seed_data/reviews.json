@@ -1,0 +1,10 @@
+[
+  { "id": 1, "product_id": 1, "user_name": "Priya S.", "rating": 5, "title": "Smells exactly like monsoon!", "comment": "Lit it on a rainy evening and it felt like home. Throw is strong even in a big living room.", "created_at": "2026-08-14", "verified": true },
+  { "id": 2, "product_id": 1, "user_name": "Rahul M.", "rating": 5, "title": "Gifted to my mom", "comment": "She loved it and asked me to order two more. Beautiful packaging too.", "created_at": "2026-07-30", "verified": true },
+  { "id": 3, "product_id": 1, "user_name": "Ananya K.", "rating": 4, "title": "Cosy and warm", "comment": "Lovely scent. Wish it came in a bigger size.", "created_at": "2026-07-02", "verified": true },
+  { "id": 4, "product_id": 2, "user_name": "Sneha P.", "rating": 5, "title": "Pure nostalgia", "comment": "It genuinely reminds me of my nani's kitchen. Can't stop smelling it.", "created_at": "2026-08-20", "verified": true },
+  { "id": 5, "product_id": 3, "user_name": "Arjun T.", "rating": 5, "title": "Vacation in a jar", "comment": "Fresh and not overpowering. The wooden wick crackle is a bonus.", "created_at": "2026-06-11", "verified": true },
+  { "id": 6, "product_id": 5, "user_name": "Kavya R.", "rating": 5, "title": "Mogra is perfect", "comment": "Very true-to-flower mogra. Lit it for our anniversary dinner.", "created_at": "2026-08-05", "verified": true },
+  { "id": 7, "product_id": 9, "user_name": "Vikram D.", "rating": 5, "title": "Luxury feel", "comment": "Looks and smells like a candle three times the price.", "created_at": "2026-07-19", "verified": true },
+  { "id": 8, "product_id": 12, "user_name": "Neha G.", "rating": 5, "title": "Best Diwali gift", "comment": "Ordered 15 boxes for my team. Everyone loved them.", "created_at": "2026-09-10", "verified": true }
+]

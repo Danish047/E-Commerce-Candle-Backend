@@ -1,0 +1,29 @@
+{
+  "categories": [
+    { "id": 1, "slug": "floral", "name": "Floral", "description": "Mogra, rose, lavender" },
+    { "id": 2, "slug": "fresh", "name": "Fresh", "description": "Citrus, sea breeze, greens" },
+    { "id": 3, "slug": "spicy", "name": "Spicy", "description": "Chai, saffron, clove" },
+    { "id": 4, "slug": "sweet", "name": "Sweet", "description": "Vanilla, caramel, jaggery" },
+    { "id": 5, "slug": "woody", "name": "Woody", "description": "Oud, cedar, pine" },
+    { "id": 6, "slug": "gift-sets", "name": "Gift Sets", "description": "Boxes ready to gift" }
+  ],
+  "moods": [
+    { "id": 1, "slug": "calm", "name": "Calm" },
+    { "id": 2, "slug": "cosy", "name": "Cosy" },
+    { "id": 3, "slug": "energised", "name": "Energised" },
+    { "id": 4, "slug": "romantic", "name": "Romantic" },
+    { "id": 5, "slug": "focused", "name": "Focused" },
+    { "id": 6, "slug": "nostalgic", "name": "Nostalgic" },
+    { "id": 7, "slug": "happy", "name": "Happy" },
+    { "id": 8, "slug": "festive", "name": "Festive" }
+  ],
+  "occasions": [
+    { "id": 1, "slug": "diwali", "name": "Diwali" },
+    { "id": 2, "slug": "birthday", "name": "Birthday" },
+    { "id": 3, "slug": "anniversary", "name": "Anniversary" },
+    { "id": 4, "slug": "housewarming", "name": "Housewarming" },
+    { "id": 5, "slug": "corporate", "name": "Corporate Gifting" },
+    { "id": 6, "slug": "self-care", "name": "Self-care" },
+    { "id": 7, "slug": "just-because", "name": "Just Because" }
+  ]
+}
