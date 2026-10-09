@@ -18,9 +18,28 @@ def env_list(name, default=""):
     return [x.strip() for x in os.getenv(name, default).split(",") if x.strip()]
 
 
-DEBUG = env_bool("DEBUG", True)
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-insecure-key-change-me")
+# Render sets RENDER=true and RENDER_EXTERNAL_HOSTNAME automatically.
+ON_RENDER = bool(os.getenv("RENDER"))
+RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://e-commerce-candle.onrender.com").rstrip("/")
+
+DEBUG = env_bool("DEBUG", not ON_RENDER)
+
+
+def _secret_key():
+    """SECRET_KEY env var > key file written by build.sh > dev-only fallback."""
+    if os.getenv("SECRET_KEY"):
+        return os.getenv("SECRET_KEY")
+    key_file = BASE_DIR / ".secret_key"
+    if key_file.exists():
+        return key_file.read_text().strip()
+    return "dev-only-insecure-key-change-me"
+
+
+SECRET_KEY = _secret_key()
 ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
+if RENDER_HOST and RENDER_HOST not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_HOST)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -97,7 +116,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ── CORS ──────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+# Local dev + the live storefront are always allowed; CORS_ALLOWED_ORIGINS adds more.
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(
+    ["http://localhost:5173", "http://127.0.0.1:5173", FRONTEND_URL]
+    + [o.rstrip("/") for o in env_list("CORS_ALLOWED_ORIGINS")]
+))
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 # ── DRF + JWT ─────────────────────────────────────────
