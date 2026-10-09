@@ -6,3 +6,4 @@ media/
 staticfiles/
 .venv/
 venv/
+.secret_key
