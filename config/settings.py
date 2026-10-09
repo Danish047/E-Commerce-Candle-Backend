@@ -118,7 +118,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ── CORS ──────────────────────────────────────────────
 # Local dev + the live storefront are always allowed; CORS_ALLOWED_ORIGINS adds more.
 CORS_ALLOWED_ORIGINS = list(dict.fromkeys(
-    ["http://localhost:5173", "http://127.0.0.1:5173", FRONTEND_URL]
+    ["http://localhost:5173", "http://127.0.0.1:5173", FRONTEND_URL,
+     "https://genzinit.com", "https://www.genzinit.com"]
     + [o.rstrip("/") for o in env_list("CORS_ALLOWED_ORIGINS")]
 ))
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
