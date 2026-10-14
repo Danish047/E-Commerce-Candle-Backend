@@ -205,3 +205,22 @@ class AdminPanelTests(TestCase):
         self.assertEqual(helper.get("/api/admin/settings/").status_code, 200)
         self.assertEqual(helper.patch("/api/admin/settings/", {"shipping_fee": 1}, format="json").status_code, 403)
         self.assertEqual(helper.get("/api/admin/staff/").status_code, 403)
+
+    def test_announcements_and_banners_schedule(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        now = timezone.now()
+        img = "https://example.com/a.jpg"
+        self.c.post("/api/admin/announcements/", {"text": "Live"}, format="json")
+        self.c.post("/api/admin/announcements/", {"text": "Future", "start_at": (now + timedelta(days=1)).isoformat()}, format="json")
+        self.c.post("/api/admin/announcements/", {"text": "Off", "is_active": False}, format="json")
+        r = self.c.post("/api/admin/banners/", {"title": "Diwali", "image_desktop": img, "end_at": (now + timedelta(days=2)).isoformat(), "show_countdown": True}, format="json")
+        self.assertEqual(r.status_code, 201, r.content)
+        self.c.post("/api/admin/banners/", {"title": "Old", "image_desktop": img, "end_at": (now - timedelta(days=1)).isoformat()}, format="json")
+        r = self.c.post("/api/admin/banners/", {"title": "Bad", "image_desktop": img, "show_countdown": True}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+        r = APIClient().get("/api/storefront/")
+        self.assertEqual([a["text"] for a in r.data["announcements"]], ["Live"])
+        self.assertEqual([b["title"] for b in r.data["banners"]["home_hero"]], ["Diwali"])

@@ -7,6 +7,7 @@ urlpatterns = [
     path("contact/", views.ContactView.as_view()),
     path("newsletter/", views.NewsletterView.as_view()),
     path("quiz/", views.QuizView.as_view()),
+    path("storefront/", views.StorefrontView.as_view()),
     path("quiz/recommend/", views.QuizRecommendView.as_view()),
     re_path(r"^pincode/(?P<pincode>\d{6})/$", views.PincodeView.as_view()),
 ]

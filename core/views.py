@@ -11,7 +11,7 @@ from catalog.serializers import ProductSerializer
 from catalog.views import live_products
 
 from . import emails
-from .models import ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
+from .models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
 
 
 def api_root(request):
@@ -82,3 +82,34 @@ class PincodeView(APIView):
     @extend_schema(responses=OpenApiTypes.OBJECT)
     def get(self, request, pincode):
         return Response(StoreSettings.load().pincode_info(pincode))
+
+
+class AnnouncementPublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = ["id", "text", "link", "bg_color", "text_color"]
+
+
+class BannerPublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        exclude = ["is_active", "start_at", "sort_order", "created_at"]
+
+
+class StorefrontView(APIView):
+    """Everything the storefront shell needs in one cheap call."""
+
+    authentication_classes = []
+    permission_classes = []
+
+    @extend_schema(responses=OpenApiTypes.OBJECT)
+    def get(self, request):
+        banners = {}
+        for b in Banner.objects.live():
+            banners.setdefault(b.placement, []).append(BannerPublicSerializer(b).data)
+        resp = Response({
+            "announcements": AnnouncementPublicSerializer(Announcement.objects.live(), many=True).data,
+            "banners": banners,
+        })
+        resp["Cache-Control"] = "public, max-age=60"
+        return resp

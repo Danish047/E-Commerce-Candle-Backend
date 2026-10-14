@@ -16,6 +16,8 @@ router.register("staff", views.StaffUserViewSet, basename="admin-staff")
 router.register("reviews", views.ReviewViewSet, basename="admin-reviews")
 router.register("messages", views.MessageViewSet, basename="admin-messages")
 router.register("subscribers", views.SubscriberViewSet, basename="admin-subscribers")
+router.register("announcements", views.AnnouncementViewSet, basename="admin-announcements")
+router.register("banners", views.BannerViewSet, basename="admin-banners")
 router.register("quiz", views.QuizQuestionViewSet, basename="admin-quiz")
 
 urlpatterns = [

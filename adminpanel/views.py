@@ -20,7 +20,7 @@ from accounts.models import User
 from accounts.serializers import StaffUserSerializer, tokens_for
 from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review
 from catalog.views import StorePagination
-from core.models import ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
+from core.models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
 from orders import services
 from orders.models import Coupon, Order
 
@@ -589,6 +589,22 @@ class QuizQuestionViewSet(StaffViewSet):
     serializer_class = s.QuizQuestionAdminSerializer
     pagination_class = None
     queryset = QuizQuestion.objects.all()
+
+
+class AnnouncementViewSet(StaffViewSet):
+    serializer_class = s.AnnouncementAdminSerializer
+    pagination_class = None
+    queryset = Announcement.objects.all()
+
+
+class BannerViewSet(StaffViewSet):
+    serializer_class = s.BannerAdminSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        qs = Banner.objects.all()
+        placement = self.request.query_params.get("placement")
+        return qs.filter(placement=placement) if placement else qs
 
 
 class StoreSettingsView(APIView):
