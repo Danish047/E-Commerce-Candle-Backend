@@ -100,3 +100,72 @@ class QuizQuestion(models.Model):
 
     def __str__(self):
         return self.question
+
+
+class ScheduledQuerySet(models.QuerySet):
+    def live(self):
+        from django.utils import timezone
+
+        now = timezone.now()
+        return self.filter(is_active=True).filter(
+            models.Q(start_at__isnull=True) | models.Q(start_at__lte=now),
+            models.Q(end_at__isnull=True) | models.Q(end_at__gt=now),
+        )
+
+
+class Scheduled(models.Model):
+    """Shared on/off switch + optional visibility window."""
+
+    is_active = models.BooleanField(default=True)
+    start_at = models.DateTimeField(null=True, blank=True, help_text="Empty = show immediately")
+    end_at = models.DateTimeField(null=True, blank=True, help_text="Empty = never expires")
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = ScheduledQuerySet.as_manager()
+
+    class Meta:
+        abstract = True
+        ordering = ["sort_order", "id"]
+
+
+class Announcement(Scheduled):
+    """One message in the scrolling bar above the navbar."""
+
+    text = models.CharField(max_length=160)
+    link = models.CharField(max_length=300, blank=True, help_text="/bulk-order or https://…")
+    bg_color = models.CharField(max_length=20, default="#3B2A20")
+    text_color = models.CharField(max_length=20, default="#FBF7F1")
+
+    class Meta(Scheduled.Meta):
+        pass
+
+    def __str__(self):
+        return self.text
+
+
+class Banner(Scheduled):
+    PLACEMENTS = [("home_hero", "Home – hero slider"), ("home_middle", "Home – middle strip"), ("shop_top", "Shop – top")]
+    ALIGN = [("left", "Left"), ("center", "Center"), ("right", "Right")]
+
+    placement = models.CharField(max_length=20, choices=PLACEMENTS, default="home_hero")
+    badge_text = models.CharField(max_length=40, blank=True)
+    title = models.CharField(max_length=120)
+    subtitle = models.CharField(max_length=300, blank=True)
+    image_desktop = models.URLField(max_length=500)
+    image_mobile = models.URLField(max_length=500, blank=True, help_text="Empty = use desktop image")
+    alt_text = models.CharField(max_length=160, blank=True)
+    primary_btn_text = models.CharField(max_length=40, blank=True)
+    primary_btn_link = models.CharField(max_length=300, blank=True)
+    secondary_btn_text = models.CharField(max_length=40, blank=True)
+    secondary_btn_link = models.CharField(max_length=300, blank=True)
+    text_align = models.CharField(max_length=10, choices=ALIGN, default="left")
+    text_color = models.CharField(max_length=20, default="#FFFFFF")
+    overlay_opacity = models.PositiveSmallIntegerField(default=35, help_text="0–90 % dark layer over the image")
+    show_countdown = models.BooleanField(default=False, help_text="Counts down to end_at")
+
+    class Meta(Scheduled.Meta):
+        pass
+
+    def __str__(self):
+        return f"{self.get_placement_display()}: {self.title}"

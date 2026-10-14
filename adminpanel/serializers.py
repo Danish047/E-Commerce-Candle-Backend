@@ -4,7 +4,7 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 
 from accounts.models import User
 from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review
-from core.models import ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
+from core.models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
 from orders.models import Coupon, Order, OrderEvent, OrderItem
 
 
@@ -262,6 +262,38 @@ class QuizQuestionAdminSerializer(serializers.ModelSerializer):
             if not isinstance(o, dict) or not o.get("value") or not o.get("label"):
                 raise serializers.ValidationError("Each answer needs a label and a matching value.")
         return v
+
+
+class _ScheduleMixin:
+    def validate(self, data):
+        start = data.get("start_at", getattr(self.instance, "start_at", None))
+        end = data.get("end_at", getattr(self.instance, "end_at", None))
+        if start and end and end <= start:
+            raise serializers.ValidationError({"end_at": "End time must be after start time."})
+        return data
+
+
+class AnnouncementAdminSerializer(_ScheduleMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = "__all__"
+
+
+class BannerAdminSerializer(_ScheduleMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = "__all__"
+
+    def validate_overlay_opacity(self, v):
+        if v > 90:
+            raise serializers.ValidationError("Keep it 90 or lower so the image is visible.")
+        return v
+
+    def validate(self, data):
+        data = super().validate(data)
+        if data.get("show_countdown") and not data.get("end_at", getattr(self.instance, "end_at", None)):
+            raise serializers.ValidationError({"end_at": "Countdown needs an end time."})
+        return data
 
 
 class StoreSettingsSerializer(serializers.ModelSerializer):
