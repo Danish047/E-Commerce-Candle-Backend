@@ -95,7 +95,7 @@ Any host that runs Python works. Render or Railway are the simplest:
 
 With `DEBUG=False` the app switches on HTTPS redirects, secure cookies and HSTS.
 
-**Product photos**: uploads are saved to the `media/` folder. Most free hosts wipe local files on each deploy, so either attach a persistent disk mounted at `media/`, or paste image links (from Cloudinary, ImageKit, Shopify CDN, etc.) with the "Add from link" option in the product editor. Photo links need no storage setup at all.
+**Product photos**: uploads are saved to the `media/` folder and served from `/media/`. On Render, attach a persistent disk mounted at `media/` (or set `MEDIA_ROOT` to the disk mount path), otherwise uploaded files can disappear on deploy or restart. You can also paste image links (from Cloudinary, ImageKit, Shopify CDN, etc.) with the "Add from link" option in the product editor; photo links need no storage setup.
 
 ## Useful commands
 

@@ -7,6 +7,8 @@ import hmac
 import json
 from unittest import mock
 
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
@@ -37,6 +39,20 @@ class StoreFlowTests(TestCase):
                 response = self.c.get(url)
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(response["Location"], "/django-admin/")
+
+    @override_settings(DEBUG=False)
+    def test_uploaded_product_photo_is_served_in_production(self):
+        image_path = default_storage.save(
+            "products/media-serving-test.jpg",
+            SimpleUploadedFile("media-serving-test.jpg", b"test image", content_type="image/jpeg"),
+        )
+        self.addCleanup(default_storage.delete, image_path)
+
+        response = self.c.get(f"/media/{image_path}")
+        self.addCleanup(response.close)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/jpeg")
 
     def test_openapi_schema_and_documentation(self):
         schema_response = self.c.get("/api/schema/?format=json")
