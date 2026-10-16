@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "orders",
     "core",
     "adminpanel",
+    "cloudinary",
 ]
 
 MIDDLEWARE = [
@@ -179,6 +180,18 @@ if not DEBUG:
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    }
+
+# ── Product photos on Cloudinary ──────────────────────
+# Set CLOUDINARY_URL (cloudinary://key:secret@cloud_name) and uploads go to
+# Cloudinary instead of the local media/ folder, so they survive deploys/restarts.
+if os.getenv("CLOUDINARY_URL"):
+    STORAGES = {
+        "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
+        "staticfiles": (
+            {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"} if DEBUG
+            else {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}
+        ),
     }
 
 LOGGING = {
