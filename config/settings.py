@@ -23,7 +23,7 @@ ON_RENDER = bool(os.getenv("RENDER"))
 RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://e-commerce-candle.onrender.com").rstrip("/")
 
-DEBUG = env_bool("DEBUG", not ON_RENDER)
+DEBUG = env_bool("DEBUG", False)
 
 
 def _secret_key():
