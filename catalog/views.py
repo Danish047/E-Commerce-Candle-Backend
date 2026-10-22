@@ -1,4 +1,6 @@
-from django.db.models import Q, TextField
+import os
+
+from django.db.models import Exists, OuterRef, Q, TextField
 from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -37,6 +39,9 @@ def live_products():
     )
 
 
+# Festival whose products lead the default ("Featured") sort. Set FEATURED_OCCASION= (empty) to turn off.
+FEATURED_OCCASION = os.getenv("FEATURED_OCCASION", "diwali").strip()
+
 ORDERINGS = {"price": "price", "-price": "-price", "-rating": "-rating", "-reviews_count": "-reviews_count", "-id": "-id"}
 
 
@@ -67,8 +72,15 @@ class ProductListView(generics.ListAPIView):
             )
         qs = qs.distinct()
         if p.get("ordering") in ORDERINGS:
-            qs = qs.order_by(ORDERINGS[p["ordering"]], "id")
-        return qs
+            return qs.order_by(ORDERINGS[p["ordering"]], "id")
+        # Featured: festival specials first, then new arrivals, then bestsellers, newest first.
+        order = ["-is_new", "-is_bestseller", "-id"]
+        if FEATURED_OCCASION:
+            qs = qs.annotate(is_festive=Exists(
+                Product.occasions.through.objects.filter(product_id=OuterRef("pk"), occasion__slug=FEATURED_OCCASION)
+            ))
+            order.insert(0, "-is_festive")
+        return qs.order_by(*order)
 
 
 class ProductDetailView(generics.RetrieveAPIView):
