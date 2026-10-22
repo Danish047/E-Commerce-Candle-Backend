@@ -26,7 +26,7 @@ class StoreFlowTests(TestCase):
         self.c = APIClient()
 
     def test_api_root(self):
-        expected = {"service": "Lumière & Co. API", "status": "ok"}
+        expected = {"service": "GenzinIT API", "status": "ok"}
         for url in ["/", "/api/"]:
             with self.subTest(url=url):
                 r = self.c.get(url)

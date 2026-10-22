@@ -15,7 +15,7 @@ from .models import Announcement, Banner, ContactMessage, NewsletterSubscriber, 
 
 
 def api_root(request):
-    return JsonResponse({"service": "Lumière & Co. API", "status": "ok"})
+    return JsonResponse({"service": "GenzinIT API", "status": "ok"})
 
 
 class ContactSerializer(serializers.ModelSerializer):
