@@ -7,8 +7,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 from core.views import api_root
 
-admin.site.site_header = "Lumière & Co. — Django admin"
-admin.site.site_title = "Lumière admin"
+admin.site.site_header = "GenzinIT — Django admin"
+admin.site.site_title = "GenzinIT admin"
 admin.site.index_title = "Store data"
 
 urlpatterns = [
