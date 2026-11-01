@@ -68,6 +68,8 @@ def place_order(*, user, data):
         p = products.get(pid)
         if not p:
             raise ValidationError({"detail": "A product in your cart is no longer available."})
+        if p.quote_only:
+            raise ValidationError({"detail": f"{p.name} is made to order. Please request a quote for it."})
         if qty > p.stock:
             raise ValidationError({"detail": f"Only {p.stock} left of {p.name}." if p.stock else f"{p.name} is sold out."})
         lines.append((p, qty))
