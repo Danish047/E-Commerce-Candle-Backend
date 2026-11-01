@@ -1,13 +1,24 @@
 from rest_framework import serializers
 from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 
-from .models import Category, Mood, Occasion, Product, Review
+from .models import Category, Mood, Occasion, Product, Review, Section
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    product_count = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Section
+        fields = ["id", "slug", "name", "icon", "tagline", "description", "image", "accent_color", "product_type",
+                  "allow_custom_orders", "status", "product_count"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    section = serializers.SlugRelatedField(slug_field="slug", read_only=True)
+
     class Meta:
         model = Category
-        fields = ["id", "slug", "name", "description"]
+        fields = ["id", "slug", "name", "description", "section"]
 
 
 class MoodSerializer(serializers.ModelSerializer):
@@ -29,6 +40,8 @@ def product_images(product, request):
 class ProductSerializer(serializers.ModelSerializer):
     """Exact shape from API_CONTRACT.md."""
 
+    section = serializers.SlugRelatedField(slug_field="slug", read_only=True)
+    section_type = serializers.CharField(read_only=True)
     category = serializers.SlugRelatedField(slug_field="slug", read_only=True)
     moods = serializers.SlugRelatedField(slug_field="slug", many=True, read_only=True)
     occasions = serializers.SlugRelatedField(slug_field="slug", many=True, read_only=True)
@@ -39,7 +52,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "id", "slug", "name", "tagline", "description", "price", "compare_price", "size",
-            "category", "moods", "occasions", "notes", "burn_time_hours", "wax_type", "wick_type",
+            "section", "section_type", "specs", "category", "moods", "occasions", "notes", "burn_time_hours", "wax_type", "wick_type",
             "fragrance_load", "stock", "rating", "reviews_count", "is_bestseller", "is_new", "color", "images",
         ]
 

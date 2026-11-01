@@ -1,6 +1,6 @@
 import os
 
-from django.db.models import Exists, OuterRef, Q, TextField
+from django.db.models import Count, Exists, OuterRef, Q, TextField
 from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 
-from .models import Category, Mood, Occasion, Product, Review
-from .serializers import CategorySerializer, MoodSerializer, OccasionSerializer, ProductSerializer, ReviewSerializer
+from .models import Category, Mood, Occasion, Product, Review, Section
+from .serializers import CategorySerializer, SectionSerializer, MoodSerializer, OccasionSerializer, ProductSerializer, ReviewSerializer
 
 
 class StorePagination(PageNumberPagination):
@@ -34,7 +34,8 @@ class StorePagination(PageNumberPagination):
 def live_products():
     return (
         Product.objects.filter(is_active=True)
-        .select_related("category")
+        .exclude(section__status__in=[Section.HIDDEN, Section.COMING_SOON])
+        .select_related("category", "section")
         .prefetch_related("moods", "occasions", "photos")
     )
 
@@ -52,6 +53,8 @@ class ProductListView(generics.ListAPIView):
     def get_queryset(self):
         p = self.request.query_params
         qs = live_products()
+        if p.get("section"):
+            qs = qs.filter(section__slug=p["section"])
         if p.get("category"):
             qs = qs.filter(category__slug=p["category"])
         if p.get("mood"):
@@ -98,7 +101,8 @@ class RelatedProductsView(APIView):
         qs = (
             live_products()
             .exclude(pk=product.pk)
-            .filter(Q(category=product.category) | Q(moods__in=product.moods.all()))
+            .filter(section=product.section)
+            .filter(Q(category=product.category) | Q(moods__in=product.moods.all()) | Q(section__product_type=Section.GENERAL))
             .distinct()[:4]
         )
         return Response(ProductSerializer(qs, many=True, context={"request": request}).data)
@@ -130,10 +134,31 @@ class ProductReviewsView(APIView):
         return Response(ReviewSerializer(review).data, status=201)
 
 
+def public_sections():
+    """Sections shown on the store (live + coming soon), with how many products each has."""
+    return Section.objects.exclude(status=Section.HIDDEN).annotate(
+        product_count=Count("products", filter=Q(products__is_active=True, status=Section.LIVE), distinct=True)
+    )
+
+
+class SectionList(generics.ListAPIView):
+    serializer_class = SectionSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return public_sections()
+
+
 class CategoryList(generics.ListAPIView):
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = None
+
+    def get_queryset(self):
+        qs = Category.objects.select_related("section")
+        section = self.request.query_params.get("section")
+        if section:
+            qs = qs.filter(Q(section__slug=section) | Q(section__isnull=True))
+        return qs
 
 
 class MoodList(generics.ListAPIView):

@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 router = DefaultRouter(trailing_slash=True)
+router.register("sections", views.SectionViewSet, basename="admin-sections")
 router.register("products", views.ProductViewSet, basename="admin-products")
 router.register("categories", views.CategoryViewSet, basename="admin-categories")
 router.register("moods", views.MoodViewSet, basename="admin-moods")

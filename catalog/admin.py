@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Mood, Occasion, Product, ProductImage, Review
+from .models import Category, Mood, Occasion, Product, ProductImage, Review, Section
 
 
 class ProductImageInline(admin.TabularInline):
@@ -10,8 +10,8 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "price", "stock", "is_active", "is_bestseller", "rating", "reviews_count"]
-    list_filter = ["is_active", "is_bestseller", "is_new", "category"]
+    list_display = ["name", "section", "category", "price", "stock", "is_active", "is_bestseller", "rating", "reviews_count"]
+    list_filter = ["section", "is_active", "is_bestseller", "is_new", "category"]
     list_editable = ["price", "stock", "is_active"]
     search_fields = ["name", "tagline", "sku"]
     prepopulated_fields = {"slug": ("name",)}
@@ -29,3 +29,10 @@ class ReviewAdmin(admin.ModelAdmin):
 
 for model in (Category, Mood, Occasion):
     admin.site.register(model, list_display=["name", "slug", "sort_order"], prepopulated_fields={"slug": ("name",)})
+
+
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ["name", "slug", "status", "product_type", "allow_custom_orders", "sort_order"]
+    list_editable = ["status", "sort_order"]
+    prepopulated_fields = {"slug": ("name",)}

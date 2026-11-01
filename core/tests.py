@@ -13,7 +13,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
-from catalog.models import Product
+from catalog.models import Category, Product
 from orders.models import Coupon, Order
 
 
@@ -85,7 +85,8 @@ class StoreFlowTests(TestCase):
         self.assertEqual(self.c.get(f"/api/products/{p['slug']}/").status_code, 200)
         self.assertEqual(self.c.get("/api/products/does-not-exist/").status_code, 404)
         self.assertTrue(self.c.get("/api/products/", {"search": "cardamom"}).data["count"] >= 1)
-        self.assertEqual(len(self.c.get("/api/categories/").data), 6)
+        self.assertEqual(len(self.c.get("/api/categories/").data), 7)  # 6 candle + "3D Models"
+        self.assertEqual(len(self.c.get("/api/categories/?section=candles").data), 6)
         self.assertEqual(len(self.c.get("/api/quiz/").data["questions"]), 3)
         rec = self.c.post("/api/quiz/recommend/", {"answers": {"mood": "cosy", "category": "spicy", "occasion": "diwali"}}, format="json")
         self.assertEqual(len(rec.data["products"]), 3)
@@ -240,3 +241,45 @@ class AdminPanelTests(TestCase):
         r = APIClient().get("/api/storefront/")
         self.assertEqual([a["text"] for a in r.data["announcements"]], ["Live"])
         self.assertEqual([b["title"] for b in r.data["banners"]["home_hero"]], ["Diwali"])
+
+    def test_sections(self):
+        from catalog.models import Section
+
+        # Migration put every seeded product under Candles; 3D Printing starts as Coming soon
+        self.assertFalse(Product.objects.filter(section__isnull=True).exists())
+        printing = Section.objects.get(slug="3d-printing")
+        self.assertEqual(printing.status, "coming_soon")
+
+        store = APIClient()
+        sections = store.get("/api/storefront/").data["sections"]
+        self.assertEqual([x["slug"] for x in sections], ["candles", "3d-printing"])
+        self.assertEqual(store.get("/api/products/?section=candles").data["count"], Product.objects.filter(is_active=True).count())
+
+        # Owner adds a 3D product; hidden from the store until the section goes live
+        cat = Category.objects.get(slug="3d-models").id
+        r = self.c.post("/api/admin/products/", {
+            "name": "Name Plate", "price": 499, "category": cat, "section": printing.id, "stock": 10, "color": "#3366AA",
+            "specs": [{"label": "Material", "value": "PLA"}, {"label": "Colour", "value": ""}],
+        }, format="json")
+        self.assertEqual(r.status_code, 201, r.content)
+        self.assertEqual(r.data["specs"], [{"label": "Material", "value": "PLA"}])
+        self.assertEqual(r.data["section_type"], "general")
+        self.assertEqual(store.get("/api/products/?section=3d-printing").data["count"], 0)
+
+        self.assertEqual(self.c.patch(f"/api/admin/sections/{printing.id}/", {"status": "live"}, format="json").status_code, 200)
+        r = store.get("/api/products/?section=3d-printing")
+        self.assertEqual(r.data["count"], 1)
+        self.assertEqual(r.data["results"][0]["section"], "3d-printing")
+        self.assertEqual([c["slug"] for c in store.get("/api/categories/?section=3d-printing").data], ["3d-models"])
+
+        # New section from the admin panel
+        r = self.c.post("/api/admin/sections/", {"name": "Gifts", "icon": "🎁", "spec_fields": "Size, Colour"}, format="json")
+        self.assertEqual(r.status_code, 201, r.content)
+        self.assertEqual((r.data["slug"], r.data["spec_fields"]), ("gifts", ["Size", "Colour"]))
+        self.assertEqual(self.c.delete(f"/api/admin/sections/{printing.id}/").status_code, 400)  # has products
+        self.assertEqual(self.c.delete(f"/api/admin/sections/{r.data['id']}/").status_code, 204)
+
+        self.c.patch(f"/api/admin/sections/{printing.id}/", {"status": "hidden"}, format="json")
+        self.assertEqual(store.get("/api/products/?section=3d-printing").data["count"], 0)
+        self.assertNotIn("3d-printing", [x["slug"] for x in store.get("/api/sections/").data])
+        self.assertIn("by_section", self.c.get("/api/admin/dashboard/").data)

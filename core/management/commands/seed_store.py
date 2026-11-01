@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from accounts.models import User
-from catalog.models import Category, Mood, Occasion, Product, Review
+from catalog.models import Category, Section, Mood, Occasion, Product, Review
 from core.models import QuizQuestion, StoreSettings
 from orders.models import Coupon
 
@@ -32,7 +32,8 @@ class Command(BaseCommand):
         StoreSettings.load()
         tax = load("taxonomy")
         for i, c in enumerate(tax["categories"]):
-            Category.objects.update_or_create(slug=c["slug"], defaults={"name": c["name"], "description": c.get("description", ""), "sort_order": i})
+            Category.objects.update_or_create(slug=c["slug"], defaults={"name": c["name"], "description": c.get("description", ""), "sort_order": i,
+                                                                         "section": Section.objects.filter(slug="candles").first()})
         for model, key in ((Mood, "moods"), (Occasion, "occasions")):
             for i, x in enumerate(tax[key]):
                 model.objects.update_or_create(slug=x["slug"], defaults={"name": x["name"], "sort_order": i})
