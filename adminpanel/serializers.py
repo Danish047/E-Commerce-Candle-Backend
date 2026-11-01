@@ -129,7 +129,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "id", "slug", "name", "tagline", "description", "price", "compare_price", "size", "sku",
-            "section", "section_name", "section_type", "specs",
+            "section", "section_name", "section_type", "specs", "quote_only",
             "category", "category_name", "moods", "occasions", "notes",
             "burn_time_hours", "wax_type", "wick_type", "fragrance_load",
             "stock", "color", "is_active", "is_bestseller", "is_new",
@@ -155,6 +155,9 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         price = data.get("price", getattr(self.instance, "price", 0))
+        quote = data.get("quote_only", getattr(self.instance, "quote_only", False))
+        if not quote and not price:
+            raise serializers.ValidationError({"price": "Enter a price, or turn on Price on request."})
         compare = data.get("compare_price", getattr(self.instance, "compare_price", None))
         if compare and compare <= price:
             raise serializers.ValidationError({"compare_price": "MRP must be higher than the selling price, or leave it empty."})
