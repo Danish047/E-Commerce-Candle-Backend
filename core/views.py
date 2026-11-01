@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 
-from catalog.serializers import ProductSerializer
-from catalog.views import live_products
+from catalog.serializers import ProductSerializer, SectionSerializer
+from catalog.views import live_products, public_sections
 
 from . import emails
 from .models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
@@ -67,7 +67,7 @@ class QuizRecommendView(APIView):
         answers = request.data.get("answers") or {}
         mood, category, occasion = answers.get("mood"), answers.get("category"), answers.get("occasion")
         scored = []
-        for p in live_products().exclude(category__slug="gift-sets").filter(stock__gt=0):
+        for p in live_products().filter(section__product_type="candle").exclude(category__slug="gift-sets").filter(stock__gt=0):
             moods = {m.slug for m in p.moods.all()}
             occasions = {o.slug for o in p.occasions.all()}
             score = (3 if mood in moods else 0) + (3 if p.category.slug == category else 0)
@@ -110,6 +110,7 @@ class StorefrontView(APIView):
         resp = Response({
             "announcements": AnnouncementPublicSerializer(Announcement.objects.live(), many=True).data,
             "banners": banners,
+            "sections": SectionSerializer(public_sections(), many=True).data,
         })
         resp["Cache-Control"] = "public, max-age=60"
         return resp
