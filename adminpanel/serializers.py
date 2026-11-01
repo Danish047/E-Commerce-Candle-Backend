@@ -3,18 +3,58 @@ from rest_framework import serializers
 from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 
 from accounts.models import User
-from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review
+from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review, Section
 from core.models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
 from orders.models import Coupon, Order, OrderEvent, OrderItem
 
 
 # ── Catalog ────────────────────────────────────────────
+class SectionAdminSerializer(serializers.ModelSerializer):
+    product_count = serializers.IntegerField(read_only=True, default=0)
+    active_count = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Section
+        fields = ["id", "slug", "name", "icon", "tagline", "description", "image", "accent_color", "product_type",
+                  "spec_fields", "allow_custom_orders", "status", "sort_order", "product_count", "active_count",
+                  "created_at"]
+        read_only_fields = ["created_at"]
+        extra_kwargs = {"slug": {"required": False}}
+
+    def validate_slug(self, v):
+        from django.utils.text import slugify
+
+        v = slugify(v or "")
+        qs = Section.objects.filter(slug=v)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if v and qs.exists():
+            raise serializers.ValidationError("Another section already uses this web address.")
+        return v
+
+    def validate_spec_fields(self, v):
+        if isinstance(v, str):
+            v = v.split(",")
+        if not isinstance(v, list):
+            raise serializers.ValidationError("Give a list of detail names.")
+        return [str(x).strip()[:40] for x in v if str(x).strip()][:12]
+
+    def validate_accent_color(self, v):
+        import re
+
+        if not re.match(r"^#[0-9A-Fa-f]{6}$", v or ""):
+            raise serializers.ValidationError("Use a hex colour like #F3E9DC.")
+        return v
+
+
 class CategoryAdminSerializer(serializers.ModelSerializer):
     product_count = serializers.IntegerField(read_only=True)
+    section = serializers.PrimaryKeyRelatedField(queryset=Section.objects.all(), required=False, allow_null=True)
+    section_name = serializers.CharField(source="section.name", read_only=True, default=None)
 
     class Meta:
         model = Category
-        fields = ["id", "slug", "name", "description", "sort_order", "product_count"]
+        fields = ["id", "slug", "name", "description", "section", "section_name", "sort_order", "product_count"]
         extra_kwargs = {"slug": {"required": False}}
 
 
@@ -56,7 +96,26 @@ class NotesField(serializers.JSONField):
         return clean
 
 
+class SpecsField(serializers.JSONField):
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data) or []
+        if not isinstance(data, list):
+            raise serializers.ValidationError("Details must be a list.")
+        clean = []
+        for row in data[:20]:
+            if not isinstance(row, dict):
+                continue
+            label, value = str(row.get("label", "")).strip()[:40], str(row.get("value", "")).strip()[:200]
+            if label and value:
+                clean.append({"label": label, "value": value})
+        return clean
+
+
 class ProductAdminSerializer(serializers.ModelSerializer):
+    section = serializers.PrimaryKeyRelatedField(queryset=Section.objects.all(), required=False, allow_null=True)
+    section_name = serializers.CharField(source="section.name", read_only=True, default=None)
+    section_type = serializers.CharField(read_only=True)
+    specs = SpecsField(required=False)
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     moods = serializers.PrimaryKeyRelatedField(queryset=Mood.objects.all(), many=True, required=False)
     occasions = serializers.PrimaryKeyRelatedField(queryset=Occasion.objects.all(), many=True, required=False)
@@ -70,6 +129,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "id", "slug", "name", "tagline", "description", "price", "compare_price", "size", "sku",
+            "section", "section_name", "section_type", "specs",
             "category", "category_name", "moods", "occasions", "notes",
             "burn_time_hours", "wax_type", "wick_type", "fragrance_load",
             "stock", "color", "is_active", "is_bestseller", "is_new",

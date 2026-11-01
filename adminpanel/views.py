@@ -2,7 +2,7 @@ import csv
 from datetime import date, datetime, time, timedelta
 
 from django.contrib.auth import authenticate
-from django.db.models import Count, Max, Q, Sum, Value
+from django.db.models import Count, F, Max, Q, Sum, Value
 from django.db.models.deletion import ProtectedError
 from django.db.models.functions import Coalesce, TruncDate
 from django.http import HttpResponse
@@ -18,11 +18,11 @@ from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 
 from accounts.models import User
 from accounts.serializers import StaffUserSerializer, tokens_for
-from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review
+from catalog.models import Category, Mood, Occasion, Product, ProductImage, Review, Section
 from catalog.views import StorePagination
 from core.models import Announcement, Banner, ContactMessage, NewsletterSubscriber, QuizQuestion, StoreSettings
 from orders import services
-from orders.models import Coupon, Order
+from orders.models import Coupon, Order, OrderItem
 
 from . import serializers as s
 from .permissions import IsOwner, IsStaff, StaffReadOwnerWrite
@@ -174,6 +174,17 @@ class DashboardView(APIView):
 
         recent = Order.objects.annotate(items_count=Count("items")).order_by("-created_at")[:6]
 
+        sold = {
+            row["product__section"]: row
+            for row in OrderItem.objects.filter(order__in=cur.filter(COUNTED))
+            .values("product__section").annotate(qty=Sum("quantity"), revenue=Sum(F("price") * F("quantity")))
+        }
+        by_section = [
+            {"id": sec.id, "name": sec.name, "icon": sec.icon, "status": sec.status,
+             "quantity": sold.get(sec.id, {}).get("qty") or 0, "revenue": sold.get(sec.id, {}).get("revenue") or 0}
+            for sec in Section.objects.exclude(status=Section.HIDDEN)
+        ]
+
         return Response({
             "days": days,
             "kpis": {
@@ -195,6 +206,7 @@ class DashboardView(APIView):
                 "out_of_stock": Product.objects.filter(is_active=True, stock=0).count(),
             },
             "recent_orders": s.OrderListAdminSerializer(recent, many=True).data,
+            "by_section": by_section,
         })
 
 
@@ -231,7 +243,7 @@ class ProductViewSet(StaffViewSet):
     def get_queryset(self):
         p = self.request.query_params
         qs = (
-            Product.objects.select_related("category").prefetch_related("moods", "occasions", "photos")
+            Product.objects.select_related("category", "section").prefetch_related("moods", "occasions", "photos")
             .annotate(units_sold=Coalesce(Sum("order_items__quantity", filter=~Q(order_items__order__status="cancelled")), 0))
         )
         if p.get("search"):
@@ -239,6 +251,8 @@ class ProductViewSet(StaffViewSet):
             qs = qs.filter(Q(name__icontains=q) | Q(sku__icontains=q) | Q(tagline__icontains=q))
         if p.get("category"):
             qs = qs.filter(category_id=p["category"])
+        if p.get("section"):
+            qs = qs.filter(section_id=p["section"])
         if p.get("status") == "active":
             qs = qs.filter(is_active=True)
         elif p.get("status") == "hidden":
@@ -320,12 +334,32 @@ class ProductViewSet(StaffViewSet):
         return Response({"updated": n})
 
 
+class SectionViewSet(StaffViewSet):
+    serializer_class = s.SectionAdminSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return Section.objects.annotate(
+            product_count=Count("products", distinct=True),
+            active_count=Count("products", filter=Q(products__is_active=True), distinct=True),
+        ).order_by("sort_order", "id")
+
+    def destroy(self, request, *args, **kwargs):
+        section = self.get_object()
+        if section.products.exists():
+            raise ValidationError({"detail": f"{section.name} still has products. Move them to another section, "
+                                             "or set the section to Hidden instead."})
+        section.delete()
+        return Response(status=204)
+
+
 class TaxonomyViewSet(StaffViewSet):
     pagination_class = None
     model = None
 
     def get_queryset(self):
-        return self.model.objects.annotate(product_count=Count("products", distinct=True)).order_by("sort_order", "id")
+        qs = self.model.objects.annotate(product_count=Count("products", distinct=True)).order_by("sort_order", "id")
+        return qs.select_related("section") if self.model is Category else qs
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
