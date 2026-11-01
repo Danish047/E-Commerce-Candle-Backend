@@ -52,7 +52,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "id", "slug", "name", "tagline", "description", "price", "compare_price", "size",
-            "section", "section_type", "specs", "category", "moods", "occasions", "notes", "burn_time_hours", "wax_type", "wick_type",
+            "section", "section_type", "specs", "quote_only", "category", "moods", "occasions", "notes", "burn_time_hours", "wax_type", "wick_type",
             "fragrance_load", "stock", "rating", "reviews_count", "is_bestseller", "is_new", "color", "images",
         ]
 

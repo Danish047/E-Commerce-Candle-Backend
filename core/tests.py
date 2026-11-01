@@ -283,3 +283,20 @@ class AdminPanelTests(TestCase):
         self.assertEqual(store.get("/api/products/?section=3d-printing").data["count"], 0)
         self.assertNotIn("3d-printing", [x["slug"] for x in store.get("/api/sections/").data])
         self.assertIn("by_section", self.c.get("/api/admin/dashboard/").data)
+
+    def test_quote_only_products(self):
+        cat = Category.objects.get(slug="3d-models").id
+        sec = Category.objects.get(slug="3d-models").section_id
+        r = self.c.post("/api/admin/products/", {"name": "Couple Figurine", "category": cat, "section": sec, "stock": 50,
+                                                 "color": "#3366AA"}, format="json")
+        self.assertEqual(r.status_code, 400)  # no price and not on request
+        r = self.c.post("/api/admin/products/", {"name": "Couple Figurine", "category": cat, "section": sec, "stock": 50,
+                                                 "color": "#3366AA", "quote_only": True}, format="json")
+        self.assertEqual(r.status_code, 201, r.content)
+        self.assertTrue(r.data["quote_only"])
+        order = APIClient().post("/api/orders/", {
+            "items": [{"product_id": r.data["id"], "quantity": 1}], "email": "q@x.in", "payment_method": "cod",
+            "shipping_address": {"name": "A", "phone": "9999999999", "line1": "x", "city": "y", "state": "UP", "pincode": "226001"},
+        }, format="json")
+        self.assertEqual(order.status_code, 400)
+        self.assertIn("quote", str(order.data).lower())

@@ -89,7 +89,9 @@ class Product(models.Model):
     tagline = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
 
-    price = models.PositiveIntegerField(help_text="Whole rupees")
+    price = models.PositiveIntegerField(default=0, help_text="Whole rupees (ignored when price is on request)")
+    quote_only = models.BooleanField(
+        default=False, help_text="Price on request: no Add to cart, customers ask for a quote instead (custom work)")
     compare_price = models.PositiveIntegerField(null=True, blank=True, help_text="Crossed-out MRP, optional")
     size = models.CharField(max_length=40, default="200g", blank=True)
 
